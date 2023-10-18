@@ -20,7 +20,7 @@ namespace SystAnalys_lr1
         List<Vertex> V;
 
         /// <summary>
-        /// Лист связе1.
+        /// Лист связей.
         /// </summary>
         List<Edge> E;
 
@@ -131,39 +131,12 @@ namespace SystAnalys_lr1
             //нажата кнопка "выбрать вершину", ищем степень вершины
             if (selectButton.Enabled == false)
             {
-                for (int i = 0; i < V.Count; i++)
-                {
-                    if (Math.Pow((V[i].x - e.X), 2) + Math.Pow((V[i].y - e.Y), 2) <= G.R * G.R)
-                    {
-                        if (selected1 != -1)
-                        {
-                            selected1 = -1;
-                            G.clearSheet();
-                            G.drawALLGraph(V, E);
-                            sheet.Image = G.GetBitmap();
-                        }
-                        if (selected1 == -1)
-                        {
-                            G.drawSelectedVertex(V[i].x, V[i].y);
-                            selected1 = i;
-                            sheet.Image = G.GetBitmap();
-                            createAdjAndOut();
-                            listBoxMatrix.Items.Clear();
-                            int degree = 0;
-                            for (int j = 0; j < V.Count; j++)
-                                degree += AMatrix[selected1, j];
-                            listBoxMatrix.Items.Add("Степень вершины №" + (selected1 + 1) + " равна " + degree);
-                            break;
-                        }
-                    }
-                }
+                drawSelectVertex(e.X, e.Y);
             }
             //нажата кнопка "рисовать вершину"
             if (drawVertexButton.Enabled == false)
             {
-                V.Add(new Vertex(e.X, e.Y));
-                G.drawVertex(e.X, e.Y, V.Count.ToString());
-                sheet.Image = G.GetBitmap();
+                createNewVertex(e.X, e.Y);
             }
             //нажата кнопка "рисовать ребро"
             if (drawEdgeButton.Enabled == false)
@@ -273,6 +246,53 @@ namespace SystAnalys_lr1
                 }
             }
         }
+
+		/// <summary>
+		/// Отрисовка выбранной вершины.
+		/// </summary>
+		/// <param name="x">X координата нажатия мышки.</param>
+		/// <param name="y">Y координата нажатия мышки.</param>
+		private void drawSelectVertex(int x, int y)
+        {
+			for (int i = 0; i < V.Count; i++)
+			{
+				if (Math.Pow((V[i].x - x), 2) + Math.Pow((V[i].y - y), 2) <= G.R * G.R)
+				{
+					if (selected1 != -1)
+					{
+						selected1 = -1;
+						G.clearSheet();
+						G.drawALLGraph(V, E);
+						sheet.Image = G.GetBitmap();
+					}
+					if (selected1 == -1)
+					{
+						G.drawSelectedVertex(V[i].x, V[i].y);
+						selected1 = i;
+						sheet.Image = G.GetBitmap();
+						createAdjAndOut();
+						listBoxMatrix.Items.Clear();
+						int degree = 0;
+						for (int j = 0; j < V.Count; j++)
+							degree += AMatrix[selected1, j];
+						listBoxMatrix.Items.Add("Степень вершины №" + (selected1 + 1) + " равна " + degree);
+						break;
+					}
+				}
+			}
+		}
+
+        /// <summary>
+        /// Создание и отрисовка новой вершины.
+        /// </summary>
+        /// <param name="x">X координата вершины.</param>
+        /// <param name="y">Y координата вершины.</param>
+        private void createNewVertex(int x, int y)
+        {
+			V.Add(new Vertex(x, y));
+			G.drawVertex(x, y, V.Count.ToString());
+			sheet.Image = G.GetBitmap();
+		}
 
         //создание матрицы смежности и вывод в листбокс
         private void createAdjAndOut()
